@@ -1,0 +1,576 @@
+---
+author: Nois
+title: Análise de descritiva
+date: 09/04/2021
+classoption: a4paper
+geometry: margin=1in
+fontsize: 12pt
+output: pdf_document
+header-includes:
+  - \usepackage{caption}
+---
+
+```{r echo = FALSE, include = FALSE}
+# Bibliotecas
+library(gt)
+library(glue)
+library(magrittr)
+library(knitr)
+
+# Lendo os dados do arquivo
+dados <- read.table(file = "expectativa_vida.txt", header = FALSE, sep = "", dec = ".")
+
+attach(dados)
+
+# Nomeando as variáveis
+pop <- V2
+percap <- V3
+analf <- V4
+expvida <- V5
+crime <- V6
+estud <- V7
+ndias <- V8
+area <- V9
+dens <- pop / area
+
+options(scipen=5)
+```
+
+# Introdução
+
+No conjunto de dados disponibilizado pela problématica são apresentados os nomes de 50 estados norte-americanos, juntamente com as seguintes variáveis: pop (população estimada em julho de 1975), percap (renda percapita em 1974 em USD), analf (propoção de analfabetos em 1970), expvida (ex-pectativa de vida em anos de 1969-70), crime (taxa de criminalidade por 100.000 habitantes em 1976), estud (porcentagem de estudantes que concluem o segundo grau em 1970), ndias (número de dias do ano com temperatura abaixo de zero grau Celsius na cidade mais importante do estado) e area (área do estado em milhas quadradas). Nesse ínterim, o interesse neste estudo é tentar analisar a expectativa de vida da população a partir das variáveis percap , anlalf , crime, estud, ndias e dens em que dens = pop/area.
+Dessarte, a fim de realizar tal análise, será realizado dois tipos de análises a partir do conjunto de dados fornecido, sendo elas: análise descritiva unidimensional e análise descritiva bidimensional.
+
+## Amostra
+
+Para realização desse experimento, o plano probabilístico processo de amostragem utilizado, o qual reúne todas as técnicas que usam mecanismos aleatórios (sorteio) de seleção dos elementos da amostra, atribuindo a cada um deles uma probabilidade conhecida de seleção, foi a Amostragem Casual Simples (A.C.S), em que todos os elementos da população tem igual probabilidade de pertencer a amostra.
+Considerou-se para o presente experimento as seguintes características, com seus respectivos tipo, dispostas na seguinte tabela:
+
+| Variáveis | Tipo de Variável      | Descrição                                                                   |
+| --------- | --------------------- | --------------------------------------------------------------------------- |
+| pop       | Quantitativa Contínua | Quantidade estimada de pessoas.                                             |
+| percap    | Quantitativa Contínua | Mesurada em dólares (USD)                                                   |
+| analf     | Quantitativa Contínua | Proporção de pessoas analfabetas em relação à população                     |
+| expvida   | Quantitativa Contínua | Expectativa em anos                                                         |
+| crime     | Quantitativa Contínua | Taxa de criminalidade por 100.000 habitantes                                |
+| estud     | Quantitativa Contínua | Porcentagem de estudantes que concluem o ensino médio                       |
+| ndias     | Quantitativa Discreta | Quantidade de dias com temperatura abaixo de zero na cidade mais importante |
+| area      | Quantitativa Contínua | Area do estado em milhas quadradas.                                         |
+| dens      | Quantitativa Contínua | População dividida pela área do estado                                      |
+
+## Objetivos
+
+Esta análise estatística possui como principal objetivo analisar e buscar uma explicação sobre a expevativa de vida nas presentes populações com bases nos dados relativos à renda per capita, ao indíce de analfabetismo, à taxa de criminalidade, ao nível de estudo, ao número de de dias com temperatura abaixo de zero e à densidade demográfica.
+
+## Metodologia Estatística e Apresentação dos Resultados
+
+# Análise descritiva unidimensional
+
+## População
+
+### Tabela de frequência
+
+```{r echo = FALSE, include = TRUE}
+#1. Tabela de frequência
+# Sequência de 365 a 21198 incrementando em 2083,3
+intervalos <- seq(365, 21198, 2083.3)
+
+# Criando os rótulos
+classes <- c("[365, 2448.3[", "[2448.3, 4531.6[", "[4531.6, 6614.9[", "[6614.9, 8698.2[", "[8698.2, 10781.5[", "[10781.5, 12864.8[", "[12864.8, 14948.1[", "[14948.1, 17031.4[", "[17031.4, 19114.7[", "[19114.7, 21198[")
+
+pop_absoluta <- table(cut(pop, breaks = intervalos, right = FALSE, labels = classes))
+
+#Alocando a tabela de frequência relativa na variável pop_relativa
+pop_relativa <- prop.table(pop_absoluta)
+
+#Criando uma tabela de frequência relativa percentual
+pop_relativa_percentual <- pop_relativa * 100
+
+#Criando uma única tabela com as colunas pop e pop_relativa_percentual
+pop_tabela_freq <- cbind(pop_absoluta, pop_relativa_percentual)
+
+# Exibindo a tabela
+pop_tabela_freq
+```
+
+### Gráficos
+
+```{r echo = FALSE, include = TRUE}
+#2. Grafico de linha
+# Sequência de 365 a 21198 incrementando em 2083.3
+intervalos <- seq(365, 21198, 2083.3)
+
+dados_pop <- pop
+
+# Histograma com frequência absoluta
+hist(dados_pop,
+     xlab = "População estimada",
+     ylab = "Frequência absoluta",
+     col = "orange",
+     breaks = intervalos,
+     main = "")
+
+# Gráfico de densidade
+plot(density(dados_pop),
+     xlab = "População estimada",
+     ylab = "Densidade empírica",
+     col = "red",
+     main = "")
+
+#3. Boxplot
+# Resumo dos dados
+summary(pop)
+
+# Boxplot
+boxplot(pop, ylab = "População estimada", col = "bisque")
+```
+
+## Renda per capita
+
+### Tabela de frequência
+
+```{r echo = FALSE, include = TRUE}
+#1. Tabela de frequencia
+
+# Sequência de 3000 a 7000 incrementando em 500
+intervalos <- seq(3000, 7000, 500)
+
+# Criando os rótulos
+classes <- c("[3000, 3500[", "[3500, 4000[", "[4000, 4500[", "[4500, 5000[", "[5000, 5500[", "[5500, 6000[", "[6000, 6500[", "[6500, 7000[")
+
+per_capita_absoluta <- table(cut(percap, breaks = intervalos, right = FALSE, labels = classes))
+
+per_capita_relativa <- prop.table(per_capita_absoluta)
+
+per_capita_relativa_porcentagem <- per_capita_relativa * 100
+
+per_capita_tabela <- cbind(per_capita_absoluta, per_capita_relativa_porcentagem)
+
+# Exibindo a tabela
+per_capita_tabela
+```
+
+### Gráficos
+
+```{r echo = FALSE, include = TRUE}
+# Sequência de 3000 a 7000 incrementando em 500
+intervalos <- seq(3000, 7000, 500)
+
+dados_percap <- percap
+
+# Histograma com frequência absoluta
+hist(dados_percap,
+     xlab = "Renda per capita (USD)",
+     ylab = "Frequência absoluta",
+     col = "orange",
+     breaks = intervalos,
+     main = "")
+
+# Gráfico de densidade
+plot(density(dados_percap),
+     xlab = "Renda per capita (USD)",
+     ylab = "Densidade empírica",
+     col = "red",
+     main = "")
+
+
+#3. Boxplot
+# Resumo dos dados
+summary(percap)
+
+# Boxplot
+boxplot(percap, ylab = "Renda per capita (USD)", col = "bisque")
+```
+
+## População de Analfabetos
+
+### Tabela Descritiva
+
+```{r echo = FALSE, include = TRUE}
+#Definição das classes com base no resumo da variável
+brk <- seq(0.5, 2.8, 0.2875)
+classes <- c("[0.5, 0.7875[", "[0,7875, 1.075[", "[1.075, 1.3625[", "[1.3625, 1.651[", "[1.651, 1.9375[", "[1.9375, 2.225[", "[2.225, 2.5125[", "[2.5125, 2.8[")
+
+#Alocando a tabela de frequência absoluta na variável
+analt_absoluta <- table(cut(analf, breaks = brk, right = FALSE, labels = classes))
+
+#Alocando a tabela de frequência relativa na variável AnalfR
+analt_relativo <- prop.table(analt_absoluta)
+
+#Criando uma tabela de frequência relativa percentual
+analt_relativo_percent <- analt_relativo * 100
+
+#Criando uma única tabela com as colunas AnalfA, AnalfR, AnalfP
+AnalfX <- cbind(analt_absoluta, analt_relativo_percent)
+
+# Exibindo a tabela
+AnalfX
+```
+
+### Gráficos
+
+```{r echo = FALSE, include=TRUE}
+dados_analf <- analf
+
+# Histograma com frequência absoluta
+hist(dados_analf,
+     xlab = "População de Analfabetos em 1970",
+     ylab = "Frequência absoluta",
+     col = "orange",
+     breaks = seq(0.5, 2.8, 0.2875),
+     main = "")
+
+# Gráfico de densidade
+plot(density(dados_analf),
+     xlab = "Renda per capita (USD)",
+     ylab = "Densidade empírica",
+     col = "red",
+     main = "")
+
+# Resumo dos dados
+summary(analf)
+
+# Boxplot
+boxplot(analf, ylab = "População de analfabetos", col = "bisque")
+```
+
+## Expectativa de vida
+
+### Tabela descritiva
+
+```{r echo = FALSE, include = TRUE}
+
+#Cria uma sequência de 67.96 a 73.60 incrementando de 1
+intervalos_expvida <- seq(67.96, 73.96, 1)
+
+#Cria os rótulos
+classes_expvida <- c("[67.96, 68.96[", "[68.96, 69.96[", "[69.96, 70.96[", "[70.96, 71.96[", "[71.96, 72.96[", "[72.96, 73.96[")
+
+#Cria tabela de frequencia absoluta
+expvida_freq_absoluta <- table(cut(expvida, breaks = intervalos_expvida, right = FALSE, labels = classes_expvida))
+
+#Cria tabela de frequencia relativa
+expvida_freq_relativa <- prop.table(expvida_freq_absoluta)
+
+expvida_freq_porcentagem <- expvida_freq_relativa * 100
+
+expvida_tabela_frequencia <- cbind(expvida_freq_absoluta, expvida_freq_porcentagem)
+
+expvida_tabela_frequencia
+```
+
+### Gráficos
+
+```{r echo = FALSE, include=TRUE}
+dados_expvida <- expvida
+intervalos_expvida <- seq(67.96, 73.96, 1)
+
+# Histograma com frequência absoluta
+hist(dados_expvida,
+     xlab = "Expectativa de vida em anos",
+     ylab = "Frequência absoluta",
+     col = "orange",
+     breaks = intervalos_expvida,
+     main = "")
+
+plot(density(expvida),
+     xlab = "Expectativa de vida em anos",
+     ylab = "Densidade empírica",
+     col = "red",
+     main = "")
+
+# Boxplot
+# Resumo dos dados
+summary(expvida)
+
+# Boxplot
+boxplot(expvida, ylab = "Expectativa de vida", col = "bisque")
+```
+
+## Crime
+
+### Tabela descritiva
+
+```{r echo = FALSE, include=TRUE}
+# Criando intervalos
+# intervalos <- seq(1.4, 15.1, (summary(crime)[6] - summary(crime)[1])/6)
+intervalos <- seq(1.4, 15.1, 2.283333)
+
+# Cria os rótulos
+classes <- c("[1.4, 3.683333[", "[3.683333, 5.966667[", "[5.966667, 8.25[", "[8.25, 10.533333[", "[10.533333, 12.816667[", "[12.816667, 15.1[")
+
+# Criando a tabela de frequência absoluta
+crime_absoluta <- table(cut(crime, breaks = intervalos, right = FALSE, labels = classes))
+
+crime_relativa <- prop.table(crime_absoluta)
+
+crime_porcentagem <- crime_relativa * 100
+
+crime_tabela_frequencia <- cbind(crime_absoluta, crime_porcentagem)
+
+crime_tabela_frequencia
+```
+
+### Gráficos
+
+```{r echo = FALSE, include=TRUE}
+dados_crime <- crime
+
+# Histograma com frequência absoluta
+hist(dados_crime,
+     xlab = "Taxa de criminalidade por 100.000 habitantes",
+     ylab = "Frequência absoluta",
+     col = "orange",
+     breaks = seq(1.4, 15.1, 2.2833333),
+     main = "")
+
+plot(density(dados_crime),
+     xlab = "Taxa de criminalidade por 100.000 habitantes",
+     ylab = "Densidade empírica",
+     col = "red",
+     main = "")
+
+# Boxplot
+# Resumo dos dados
+summary(crime)
+
+# Boxplot
+boxplot(crime, ylab = "Taxa de criminalidade", col = "bisque")
+```
+
+## Estudo
+
+### Tabela descritiva
+
+```{r echo=FALSE, include=TRUE}
+#Tabela frequencia analf com intervalo de 2,95
+brk <- seq(37.8, 67.3, 2.95)
+classes <- c("[37.8, 40.75[", "[40.75, 43.7[", "[43.7, 46.65[", "[46.65, 49.6[", "[49.6, 52.55[", "[52.55, 55.5[", "[55.5, 58.45[", "[58.45, 61.4[", "[61.4, 64.35[", "[64.35, 67.3[")
+
+tabela_estud <- table(cut(estud, breaks = brk, right = FALSE, labels = classes))
+tabela_estud_relativo <- prop.table(tabela_estud)
+porc_tabela_estud <- tabela_estud_relativo * 100
+
+X7 <- cbind(tabela_estud, porc_tabela_estud)
+
+X7
+```
+
+### Gráficos
+
+```{r echo=FALSE, include=TRUE}
+dados_estud <- estud
+intervalos <- seq(37.8, 67.3, 2.95)
+
+# Histograma com frequência absoluta
+hist(dados_estud,
+     xlab = "Porcentagem de conclusão do ensino médio",
+     ylab = "Frequência absoluta",
+     col = "orange",
+     breaks = intervalos,
+     main = "")
+
+# Gráfico de densidade
+plot(density(dados_estud),
+     xlab = "Porcentagem de conclusão do ensino médio",
+     ylab = "Densidade empírica",
+     col = "red",
+     main = "")
+
+#Boxplot
+# Resumo dos dados
+summary(estud)
+
+# Boxplot
+boxplot(estud, ylab = "Porcentagem de conclusão do ensino médio", col = "bisque")
+```
+
+## Número de dias do ano com temperatura abaixo de 0
+
+### Tabela descritiva
+
+```{r echo = FALSE, include = TRUE}
+#1. Tabela de frequencia
+#Alocando a tabela de frequência absoluta na variável ndias
+ndias_absoluto <- table(ndias)
+#Alocando a tabela de frequência relativa na variável ndias_relativa
+ndias_relativa <- prop.table(ndias_absoluto)
+#Criando uma tabela de frequência relativa percentual
+ndias_relativa_percentual <- ndias_relativa * 100
+#Criando uma única tabela com as colunas ndias e ndias_relativa_percentual
+result1 <- cbind(ndias_absoluto,  ndias_relativa_percentual)
+
+#Exibindo o resultado
+result1
+```
+
+### Gráficos
+
+```{r echo = FALSE, include = TRUE}
+#2. Grafico de linha
+plot(ndias,
+     xlab = "Número de dias do ano com temperatura abaixo de 0°C",
+     ylab = "Frequência absoluta",
+     col = "green")
+
+#3. Boxplot
+# Resumo dos dados
+summary(ndias)
+
+# Boxplot
+boxplot(ndias, ylab = "Número de dias do ano com temperatura abaixo de 0°C", col = "bisque")
+```
+
+## Área do estado
+
+### Tabela descritiva
+
+```{r echo=FALSE, include=TRUE}
+# Criando intervalos
+intervalos <- seq(0, 600000, 60000)
+
+# Cria os rótulos
+classes <- c("[0, 60000[", "[60000, 120000[", "[120000, 180000[", "[180000, 240000[", "[240000, 300000[", "[300000, 360000[", "[360000, 420000[", "[420000, 480000[", "[480000, 540000[", "[540000, 600000[")
+
+# Criando a tabela de frequência absoluta
+area_absoluta <- table(cut(area, breaks = intervalos, right = FALSE, labels = classes))
+
+area_relativa <- prop.table(area_absoluta)
+
+area_porcentagem <- area_relativa * 100
+
+area_tabela_frequencia <- cbind(area_absoluta, area_porcentagem)
+
+area_tabela_frequencia
+```
+
+### Gráficos
+
+```{r echo=FALSE, include=TRUE}
+dados_area <- area
+
+intervalos <- seq(0, 600000, 60000)
+
+
+# Histograma com frequência absoluta
+hist(dados_area,
+     xlab = "Área do estado em milhas quadradas",
+     ylab = "Frequência absoluta",
+     col = "orange",
+     breaks = intervalos,
+     main = "")
+
+plot(density(dados_area),
+     xlab = "Área do estado em milhas quadradas",
+     ylab = "Densidade empírica",
+     col = "red",
+     main = "")
+
+
+# Boxplot
+# Resumo dos dados
+summary(area)
+
+# Boxplot
+boxplot(area, ylab = "Área do estado", col = "bisque")
+```
+
+## Densidade populacional
+
+### Tabela descritiva
+
+```{r echo=FALSE, include=TRUE}
+#1. Tabela de frequencia
+# Cria uma sequência de 0.0006444 a 2.6844614 incrementando de 0,4473028
+intervalos <- seq(0.0006444, 2.6844614, 0.4473028)
+# Cria os rótulos
+classes <- c("[0.0006444, 0.4479472[", "[0.4479472, 0.89525[", "[0.89525, 1.3425528[", "[1.3425528, 1.7898556[", "[1.7898556, 2.2371584[", "[1.7898556, 2.6844614]")
+# Criando a tabela de frequência absoluta
+dens_freq_absoluta <- table(cut(dens, breaks = intervalos, right = FALSE, labels = classes))
+dens_freq_relativa <- prop.table(dens_freq_absoluta)
+dens_freq_porcentagem <- dens_freq_relativa * 100
+dens_tabela_frequencia <- cbind(dens_freq_absoluta, dens_freq_porcentagem)
+dens_tabela_frequencia
+```
+
+### Gráficos
+
+```{r echo=FALSE, include=TRUE}
+#2. Histograma de dens
+dados_dens <- dens
+
+brk <- seq(0.0006444, 2.6844614, 0.447302825)
+
+# Histograma com frequência absoluta
+hist(dados_dens,
+     xlab = "Densidade populacional (hab/milhas²)",
+     ylab = "Frequência absoluta",
+     col = "orange",
+     breaks = brk,
+     main = "")
+
+plot(density(dados_dens),
+     xlab = "Densidade populacional (hab/milhas²)",
+     ylab = "Densidade empírica",
+     col = "red",
+     main = "")
+
+#3. Boxplot
+# Resumo dos dados
+summary(dens)
+
+# Boxplot
+boxplot(dens, ylab = "Densidade populacional (hab/milhas²)", col = "bisque")
+```
+
+# Análise descritiva bidimensional
+
+Dado que o interesse do estudo é tentar explicar a expectativa de vida pelas variáveis:
+- percap
+- analf
+- crime
+- estud
+- ndias
+- dens
+
+## Correlação com renda per capta
+
+```{r echo=FALSE, include=TRUE}
+plot(expvida, percap, ylab = "Renda per capita (USD)", xlab = "Expectativa de vida (anos)")
+cor(expvida, percap)
+```
+
+## Correlação com taxa de analfabetismo
+
+```{r echo=FALSE, include=TRUE}
+plot(expvida, analf, ylab = "Taxa de analfabetismo", xlab = "Expectativa de vida (anos)")
+cor(expvida, analf)
+```
+
+## Correlação com taxa de criminalidade
+
+```{r echo=FALSE, include=TRUE}
+plot(expvida, crime, ylab = "Taxa de criminalidade", xlab = "Expectativa de vida (anos)")
+cor(expvida, crime)
+```
+
+## Correlação com porcentagem de estudantes que concluem o ensino médio
+
+```{r echo=FALSE, include=TRUE}
+plot(expvida, estud, ylab = "Porcentagem de conclusão do ensino médio", xlab = "Expectativa de vida (anos)")
+cor(expvida, estud)
+```
+
+## Correlação com dias do ano com temperatura abaixo de zero
+
+```{r echo=FALSE, include=TRUE}
+plot(expvida, ndias, ylab = "Dias do ano com temperatura abaixo de 0°C", xlab = "Expectativa de vida (anos)")
+cor(expvida, ndias)
+```
+
+## Correlação com densidade populacional
+
+```{r echo=FALSE, include=TRUE}
+plot(expvida, dens, ylab = "Densidade populacional (hab/milhas²)", xlab = "Expectativa de vida (anos)")
+cor(expvida, dens)
+```
